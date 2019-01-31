@@ -5,6 +5,8 @@ const rootDir = require("../util/path");
 
 const router = express.Router();
 
+const products = [];
+
 // /admin/add-product
 // GET
 router.get("/add-product", (req, res) => {
@@ -16,7 +18,13 @@ router.get("/add-product", (req, res) => {
 // POST
 router.post("/add-product", (req, res) => {
   console.log(req.body);
+  products.push({ title: req.body.title });
   res.redirect("/");
 });
 
-module.exports = router;
+// ---> if I'm exporting one thing
+// module.exports = router;
+// ---> now I want to export 2 different variables
+exports.routes = router;
+exports.products = products;
+// ---> of course I need to change imports now in app.js
