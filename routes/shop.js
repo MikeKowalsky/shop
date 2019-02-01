@@ -20,7 +20,8 @@ router.get("/", (req, res) => {
 
   // templating engine
   // default templating engine and path is set up
-  res.render("shop");
+  const products = adminData.products;
+  res.render("shop", { products, docTitle: "MySuperShop" });
 });
 
 module.exports = router;
