@@ -21,7 +21,19 @@ router.get("/", (req, res) => {
   // templating engine
   // default templating engine and path is set up
   const products = adminData.products;
-  res.render("shop", { products, pageTitle: "MySuperShop", path: "/" });
+
+  // // PUG
+  // res.render("shop", { products, pageTitle: "MySuperShop", path: "/" });
+
+  // HANDLEBARS
+  // need to add logic because hbs doesn't provide this
+  // basically no way to use any JS expressions in hbs files
+  res.render("shop", {
+    products,
+    pageTitle: "MySuperShop",
+    path: "/",
+    hasProducts: products.length > 0
+  });
 });
 
 module.exports = router;
