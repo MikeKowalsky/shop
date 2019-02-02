@@ -19,7 +19,12 @@ const app = express();
 // HANDLEBARS
 // hbs it's a name of an engine
 // so then template files need to have the same extension
-app.engine("hbs", expressHbs());
+// * basically this: {layoutsDir: 'views/layouts'} is redundant because
+// it's default, but if it's different then needs to be set up here
+app.engine(
+  "hbs",
+  expressHbs({ layoutsDir: "views/layouts", defaultLayout: "main-layout.hbs" })
+);
 app.set("view engine", "hbs");
 app.set("views", "views");
 

@@ -28,11 +28,13 @@ router.get("/", (req, res) => {
   // HANDLEBARS
   // need to add logic because hbs doesn't provide this
   // basically no way to use any JS expressions in hbs files
+  // if I want not to use layout I need to add layout: flase to the object
   res.render("shop", {
     products,
     pageTitle: "MySuperShop",
-    path: "/",
-    hasProducts: products.length > 0
+    productCSS: true,
+    hasProducts: products.length > 0,
+    activeShop: true
   });
 });
 
