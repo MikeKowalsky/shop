@@ -2,7 +2,7 @@ const path = require("path");
 
 const express = require("express");
 const bodyParser = require("body-parser");
-const expressHbs = require("express-handlebars");
+// const expressHbs = require("express-handlebars");
 
 const adminData = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
@@ -16,16 +16,20 @@ const app = express();
 // app.set("view engine", "pug");
 // app.set("views", "views");
 
-// HANDLEBARS
-// hbs it's a name of an engine
-// so then template files need to have the same extension
-// * basically this: {layoutsDir: 'views/layouts'} is redundant because
-// it's default, but if it's different then needs to be set up here
-app.engine(
-  "hbs",
-  expressHbs({ layoutsDir: "views/layouts", defaultLayout: "main-layout.hbs" })
-);
-app.set("view engine", "hbs");
+// // HANDLEBARS
+// // hbs it's a name of an engine
+// // so then template files need to have the same extension
+// // * basically this: {layoutsDir: 'views/layouts'} is redundant because
+// // it's default, but if it's different then needs to be set up here
+// app.engine(
+//   "hbs",
+//   expressHbs({ layoutsDir: "views/layouts", defaultLayout: "main-layout.hbs" })
+// );
+// app.set("view engine", "hbs");
+// app.set("views", "views");
+
+//EJS
+app.set("view engine", "ejs");
 app.set("views", "views");
 
 app.use(bodyParser.urlencoded({ extended: false }));
