@@ -1,7 +1,6 @@
 const path = require("path");
 
 const express = require("express");
-const rootDir = require("../util/path");
 
 const router = express.Router();
 
@@ -10,18 +9,6 @@ const products = [];
 // /admin/add-product
 // GET
 router.get("/add-product", (req, res) => {
-  // res.sendFile(path.join(__dirname, "..", "views", "add-product.html"));
-  // res.sendFile(path.join(roo tDir, "views", "add-product.html"));
-
-  // //Hbs
-  // res.render("add-product", {
-  //   pageTitle: "Add product",
-  //   productCSS: true,
-  //   formsCSS: true,
-  //   activeAddProduct: true
-  // });
-
-  // pug / ejs
   res.render("add-product", {
     pageTitle: "Add product",
     path: "/admin/add-product"
