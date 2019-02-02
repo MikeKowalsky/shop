@@ -22,7 +22,10 @@ router.get("/add-product", (req, res) => {
   // });
 
   // pug / ejs
-  res.render("add-product", { pageTitle: "Add product" });
+  res.render("add-product", {
+    pageTitle: "Add product",
+    path: "/admin/add-product"
+  });
 });
 
 // /admin/add-product

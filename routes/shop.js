@@ -40,7 +40,8 @@ router.get("/", (req, res) => {
   // EJS
   res.render("shop", {
     products,
-    pageTitle: "MySuperShop"
+    pageTitle: "MySuperShop",
+    path: "/"
   });
 });
 
