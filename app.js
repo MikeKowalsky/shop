@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
+const errorController = require("./controllers/error");
 
 const app = express();
 
@@ -17,9 +18,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 
-app.use((req, res) => {
-  res.render("404", { pageTitle: "Page not found", path: "404" });
-});
+app.use(errorController.get404);
 
 app.listen(3000, () => {
   console.log("Server runs on port 3000");
