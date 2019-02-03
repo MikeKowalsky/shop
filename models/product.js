@@ -16,8 +16,6 @@ module.exports = class Product {
     // Read file -> for bigger files use read Stream
     fs.readFile(p, (err, fileContent) => {
       let products = [];
-      console.log("read err", err);
-      console.log("read fileContent", fileContent);
       if (!err) {
         products = JSON.parse(fileContent);
       }
@@ -28,8 +26,7 @@ module.exports = class Product {
     });
   }
 
-  static fetchAll() {
-    console.log("in fetch");
+  static fetchAll(cb) {
     const p = path.join(
       path.dirname(process.mainModule.filename),
       "data",
@@ -37,8 +34,8 @@ module.exports = class Product {
     );
 
     fs.readFile(p, (err, fileContent) => {
-      if (err) return [];
-      return JSON.parse(fileContent);
+      if (err) cb([]);
+      cb(JSON.parse(fileContent));
     });
   }
 };
