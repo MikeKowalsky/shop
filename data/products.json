@@ -1,16 +1,1 @@
-[
-  {
-    "id": "435252345",
-    "title": "Great Book!",
-    "imageUrl": "https://previews.123rf.com/images/benchart/benchart1204/benchart120400018/13237662-illustration-of-a-cartoon-opened-brown-book.jpg",
-    "description": "This is an awesome book! Need to read it!",
-    "price": "19.99"
-  },
-  {
-    "id": "4398989945",
-    "title": "Another extra book ...",
-    "imageUrl": "https://previews.123rf.com/images/benchart/benchart1204/benchart120400018/13237662-illustration-of-a-cartoon-opened-brown-book.jpg",
-    "description": "This is the better version of this book.",
-    "price": "9.99"
-  }
-]
+[{"id":"435252345","title":"Great Book!","imageUrl":"https://previews.123rf.com/images/benchart/benchart1204/benchart120400018/13237662-illustration-of-a-cartoon-opened-brown-book.jpg","description":"This is an awesome book! Need to read it!","price":"19.99"},{"id":"4398989945","title":"Another extra book ...","imageUrl":"https://previews.123rf.com/images/benchart/benchart1204/benchart120400018/13237662-illustration-of-a-cartoon-opened-brown-book.jpg","description":"This is the better version of this book.","price":"9.99"},{"title":"Book FourtyFour","imageUrl":"https://previews.123rf.com/images/benchart/benchart1204/benchart120400018/13237662-illustration-of-a-cartoon-opened-brown-book.jpg","description":"Wow, this is amazing!","price":"12.99","id":"0.9838978940881604"}]
