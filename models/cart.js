@@ -14,29 +14,28 @@ module.exports = class Cart {
       let cart = { products: [], totalPrice: 0 };
 
       if (!err) {
-        // Check if the product is inside
-        const existingProductIndex = cart.products.findIndex(
-          prod => prod.id === id
-        );
-        const existingProduct = cart.products[existingProductIndex];
-        console.log(existingProduct);
-
-        // Then increase quantity/ add product
-        let updatedProduct;
-        if (existingProduct) {
-          updatedProduct = { ...existingProduct };
-          updatedProduct.qty++;
-          cart.products = [...cart.products];
-          cart.products[existingProductIndex] = updatedProduct;
-        } else {
-          updatedProduct = { id, qty: 1 };
-          cart.products = [...cart.products, updatedProduct];
-        }
-        cart.totalPrice = cart.totalPrice + +productPrice;
-        fs.writeFile(p, JSON.stringify(cart), err => console.log(err));
-      } else {
-        console.log(err);
+        cart = JSON.parse(fileContent);
       }
+      // Check if the product is inside
+      const existingProductIndex = cart.products.findIndex(
+        prod => prod.id === id
+      );
+      const existingProduct = cart.products[existingProductIndex];
+      console.log(existingProduct);
+
+      // Then increase quantity/ add product
+      let updatedProduct;
+      if (existingProduct) {
+        updatedProduct = { ...existingProduct };
+        updatedProduct.qty++;
+        cart.products = [...cart.products];
+        cart.products[existingProductIndex] = updatedProduct;
+      } else {
+        updatedProduct = { id, qty: 1 };
+        cart.products = [...cart.products, updatedProduct];
+      }
+      cart.totalPrice = cart.totalPrice + +productPrice;
+      fs.writeFile(p, JSON.stringify(cart), err => console.log(err));
     });
   }
 };
