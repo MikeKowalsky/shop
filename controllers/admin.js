@@ -14,9 +14,7 @@ exports.postAddProduct = (req, res, next) => {
 
   product
     .save()
-    .then(() => {
-      res.redirect("/");
-    })
+    .then(() => res.redirect("/"))
     .catch(err => console.log(err));
 };
 
@@ -25,19 +23,21 @@ exports.getEditProduct = (req, res, next) => {
   if (!editMode) return res.redirect("/");
 
   const prodId = req.params.productId;
-  Product.findById(prodId, product => {
-    // if there is no product with this id -> better add the msg to the user
-    if (!product) {
-      return res.redirect("/");
-    }
+  Product.findById(prodId)
+    .then(([product]) => {
+      // if there is no product with this id -> better add the msg to the user
+      if (!product[0]) {
+        return res.redirect("/");
+      }
 
-    res.render("admin/edit-product", {
-      pageTitle: "Edit product",
-      path: "/admin/edit-product",
-      editing: editMode,
-      product
-    });
-  });
+      res.render("admin/edit-product", {
+        pageTitle: "Edit product",
+        path: "/admin/edit-product",
+        editing: editMode,
+        product: product[0]
+      });
+    })
+    .catch(err => console.log(err));
 };
 
 exports.postEditProduct = (req, res, next) => {
@@ -49,8 +49,10 @@ exports.postEditProduct = (req, res, next) => {
     description,
     price
   );
-  updatedProduct.save();
-  res.redirect("/admin/products");
+  updatedProduct
+    .save()
+    .then(() => res.redirect("/admin/products"))
+    .catch(err => console.log(err));
 };
 
 exports.getProducts = (req, res, next) => {
