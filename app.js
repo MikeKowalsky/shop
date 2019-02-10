@@ -28,9 +28,10 @@ app.use(errorController.get404);
 sequelize
   .sync()
   .then(result => {
-    console.log("MySQL Connected");
+    console.log("**** **** **** ****");
+    console.log("**** MySQL Connected");
     app.listen(3000, () => {
-      console.log("Server runs on port 3000");
+      console.log("**** Server runs on port 3000");
     });
   })
   .catch(err => console.log(err));
