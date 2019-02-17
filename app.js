@@ -11,6 +11,8 @@ const errorController = require("./controllers/error");
 const sequelize = require("./util/database");
 const Product = require("./models/product");
 const User = require("./models/user");
+const Cart = require("./models/cart");
+const CartItem = require("./models/cart-item");
 
 const app = express();
 
@@ -38,12 +40,16 @@ app.use(errorController.get404);
 // Setting relations
 Product.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
 User.hasMany(Product);
+User.hasOne(Cart);
+Cart.belongsTo(User);
+Cart.belongsToMany(Product, { through: CartItem });
+Product.belongsToMany(Cart, { through: CartItem });
 
 // Goes through all models and relations and sync them with db
 // if there is no table for particular model, then it will be created
 sequelize
-  .sync()
-  // .sync({ force: true })
+  // .sync()
+  .sync({ force: true })
   .then(result => {
     return User.findByPk(1);
   })
