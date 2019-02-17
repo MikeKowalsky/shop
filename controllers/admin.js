@@ -11,12 +11,14 @@ exports.getAddProduct = (req, res, next) => {
 exports.postAddProduct = (req, res, next) => {
   const { title, imageUrl, price, description } = req.body;
 
-  Product.create({
-    title,
-    price,
-    imageUrl,
-    description
-  })
+  // Sequelize is adding this method because of the relations we created
+  req.user
+    .createProduct({
+      title,
+      price,
+      imageUrl,
+      description
+    })
     .then(result => {
       console.log("New product created");
       res.redirect("/admin/products");
@@ -29,8 +31,14 @@ exports.getEditProduct = (req, res, next) => {
   if (!editMode) return res.redirect("/");
 
   const prodId = req.params.productId;
-  Product.findByPk(prodId)
-    .then(product => {
+
+  // Product.findByPk(prodId)
+  req.user
+    .getProducts({ where: { id: prodId } })
+    // get Products is returning an array of products
+    // it searches for prodacts with given id AND with this userId
+    .then(products => {
+      const product = products[0];
       // if there is no product with this id -> better add the msg to the user
       if (!product) {
         return res.redirect("/");
@@ -65,7 +73,8 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.findAll()
+  req.user
+    .getProducts()
     .then(products => {
       res.render("admin/products", {
         products,
