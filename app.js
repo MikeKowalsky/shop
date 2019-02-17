@@ -48,8 +48,8 @@ Product.belongsToMany(Cart, { through: CartItem });
 // Goes through all models and relations and sync them with db
 // if there is no table for particular model, then it will be created
 sequelize
-  // .sync()
-  .sync({ force: true })
+  .sync()
+  // .sync({ force: true })
   .then(result => {
     return User.findByPk(1);
   })
@@ -62,6 +62,9 @@ sequelize
     return user;
   })
   .then(user => {
+    return user.createCart();
+  })
+  .then(cart => {
     // console.log(user);
     console.log("**** **** **** ****");
     console.log("**** MySQL Connected");
