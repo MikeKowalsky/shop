@@ -5,6 +5,24 @@
 <%- include('../includes/navigation.ejs') %>
 
 <main>
-  <h1>Orders</h1>
+  <% if (orders.length <= 0) { %>
+    <h1>Nothing there!</h1>
+  <% } else { %>
+    <ul>
+      <% orders.forEach(order => { %>
+        <li>
+          <h1># <%= order.id %></h1>
+          <ul>
+            <!-- thanks to this EAGER loading there is products field in every order -->
+            <% order.products.forEach(product => { %>
+              <li>
+                <%= product.title %> (<%= product.orderItem.quantity %>)
+              </li>
+            <% }); %>
+          </ul>
+        </li>
+      <% }) %>
+    </ul>
+  <% } %>
 </main>
 <%- include('../includes/end.ejs') %>
