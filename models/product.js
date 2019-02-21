@@ -7,7 +7,10 @@ class Product {
     this.price = price;
     this.description = description;
     this.imageUrl = imageUrl;
-    this._id = new mongodb.ObjectId(id);
+    // need to check id because if not even if passed id is null
+    // this line below is changing null into an object
+    // and in save it's going into update path
+    this._id = id ? new mongodb.ObjectId(id) : null;
   }
 
   save() {
@@ -51,8 +54,7 @@ class Product {
 
   static findById(prodId) {
     const db = getDb();
-    // .next() is taking the last returned object, in our case the only one
-    // instead whole cursor
+
     return (
       db
         .collection("products")
@@ -60,6 +62,8 @@ class Product {
         // in BSON - Binary JSON - binary-encoded
         // thats way we need to create this ObjectId from string before req
         .find({ _id: new mongodb.ObjectId(prodId) })
+        // .next() is taking the last returned object, in our case the only one
+        // instead whole cursor
         .next()
         .then(product => {
           console.log(product);
@@ -67,6 +71,15 @@ class Product {
         })
         .catch(err => console.log(err))
     );
+  }
+
+  static deleteById(prodId) {
+    const db = getDb();
+    return db
+      .collection("products")
+      .deleteOne({ _id: mongodb.ObjectId(prodId) })
+      .then(result => console.log("Deleted"))
+      .catch(err => console.log(err));
   }
 }
 module.exports = Product;
