@@ -23,7 +23,7 @@ app.use((req, res, next) => {
   User.findById("5c6e90d41c9d440000176a8b")
     .then(user => {
       // Adding new field to every req
-      req.user = user;
+      req.user = new User(user.name, user.email, user.cart, user._id);
       next();
     })
     .catch(err => console.log(err));

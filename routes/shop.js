@@ -23,9 +23,9 @@ router.get("/products/:productId", shopController.getProduct);
 // // GET
 // router.get("/cart", shopController.getCart);
 
-// // /cart
-// // POST
-// router.post("/cart", shopController.postCart);
+// /cart
+// POST
+router.post("/cart", shopController.postCart);
 
 // // /cart-delete-item
 // // POST
