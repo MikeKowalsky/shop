@@ -99,39 +99,15 @@ exports.postCartDeleteProduct = (req, res, next) => {
 };
 
 exports.postOrder = (req, res, next) => {
-  let fetchedCart;
   req.user
-    .getCart()
-    .then(cart => {
-      fetchedCart = cart;
-      return cart.getProducts();
-    })
-    .then(products => {
-      return req.user
-        .createOrder()
-        .then(order => {
-          return order.addProducts(
-            products.map(product => {
-              console.log(product.cartItem.quantity);
-              product.orderItem = { quantity: product.cartItem.quantity };
-              console.log(product);
-              return product;
-            })
-          );
-        })
-        .catch(err => console.log(err));
-    })
-    .then(result => fetchedCart.setProducts(null))
+    .addOrder()
     .then(result => res.redirect("/orders"))
     .catch(err => console.log(err));
 };
 
 exports.getOrders = (req, res, next) => {
   req.user
-    // concept called EAGER loading
-    // we are asking about array of orders with products inside
-    // we can do this because there is a relation setup between orders and products
-    .getOrders({ include: ["products"] })
+    .getOrders()
     .then(orders =>
       res.render("shop/orders", {
         path: "/orders",
