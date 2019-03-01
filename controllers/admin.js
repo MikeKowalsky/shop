@@ -10,11 +10,13 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.postAddProduct = (req, res, next) => {
   const { title, imageUrl, price, description } = req.body;
+
   const product = new Product({
     title,
     price,
     description,
-    imageUrl
+    imageUrl,
+    userId: req.user
   });
 
   product
@@ -67,6 +69,8 @@ exports.postEditProduct = (req, res, next) => {
 
 exports.getProducts = (req, res, next) => {
   Product.find()
+    // .select("title price -_id") // !!! query projection
+    // .populate("userId", "name") // populate userId but only with name (from the all user object)
     .then(products => {
       res.render("admin/products", {
         products,

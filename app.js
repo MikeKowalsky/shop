@@ -9,7 +9,7 @@ const config = require("./util/keys");
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 
-// const User = require("./models/user");
+const User = require("./models/user");
 
 const errorController = require("./controllers/error");
 
@@ -21,15 +21,15 @@ app.set("views", "views");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
-// app.use((req, res, next) => {
-//   User.findById("5c6e90d41c9d440000176a8b")
-//     .then(user => {
-//       // Adding new field to every req
-//       req.user = new User(user.name, user.email, user.cart, user._id);
-//       next();
-//     })
-//     .catch(err => console.log(err));
-// });
+app.use((req, res, next) => {
+  User.findById("5c78baf417cac409d556b964")
+    .then(user => {
+      // Adding new field to every req
+      req.user = user;
+      next();
+    })
+    .catch(err => console.log(err));
+});
 
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
@@ -45,6 +45,18 @@ mongoose
   )
   .then(client => {
     console.log("**** MongoDB connected");
+
+    User.findOne().then(user => {
+      if (!user) {
+        const user = new User({
+          name: "Mike",
+          email: "mike@test.com",
+          cart: { items: [] }
+        });
+        user.save();
+      }
+    });
+
     app.listen(3000, () => {
       console.log("**** Server runs on port 3000");
     });
