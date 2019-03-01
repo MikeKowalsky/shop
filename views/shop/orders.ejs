@@ -14,9 +14,9 @@
           <h1># <%= order._id %></h1>
           <ul>
             <!-- thanks to this EAGER loading there is products field in every order -->
-            <% order.items.forEach(product => { %>
+            <% order.products.forEach(p => { %>
               <li>
-                <%= product.title %> (<%= product.quantity %>)
+                <%= p.product.title %> (<%= p.quantity %>)
               </li>
             <% }); %>
           </ul>
