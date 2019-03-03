@@ -4,6 +4,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const session = require("express-session");
+const MongoDBStore = require("connect-mongodb-session")(session);
 
 const config = require("./util/keys");
 
@@ -15,7 +16,17 @@ const User = require("./models/user");
 
 const errorController = require("./controllers/error");
 
+const MONGODB_URI = `mongodb+srv://${config.keys.MONGO_USER}:${
+  config.keys.MONGO_PASSWORD
+}@cluster0-idsge.mongodb.net/shop?retryWrites=true`;
+
 const app = express();
+
+// initializing session store
+const store = new MongoDBStore({
+  uri: MONGODB_URI,
+  collection: "sessions"
+});
 
 app.set("view engine", "ejs");
 app.set("views", "views");
@@ -24,10 +35,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(
   session({
-    secret: "mySecret",
+    secret: config.keys.SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 7200000 }
+    store: store
   })
 );
 
@@ -48,12 +59,7 @@ app.use(authRoutes);
 app.use(errorController.get404);
 
 mongoose
-  .connect(
-    `mongodb+srv://${config.keys.MONGO_USER}:${
-      config.keys.MONGO_PASSWORD
-    }@cluster0-idsge.mongodb.net/shop?retryWrites=true`,
-    { useNewUrlParser: true }
-  )
+  .connect(MONGODB_URI, { useNewUrlParser: true })
   .then(client => {
     console.log("**** MongoDB connected");
 
