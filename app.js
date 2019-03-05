@@ -64,18 +64,6 @@ mongoose
   .connect(MONGODB_URI, { useNewUrlParser: true })
   .then(client => {
     console.log("**** MongoDB connected");
-
-    // User.findOne().then(user => {
-    //   if (!user) {
-    //     const user = new User({
-    //       name: "Mike",
-    //       email: "mike@test.com",
-    //       cart: { items: [] }
-    //     });
-    //     user.save();
-    //   }
-    // });
-
     app.listen(3000, () => {
       console.log("**** Server runs on port 3000");
     });
