@@ -54,21 +54,23 @@ exports.postEditProduct = (req, res, next) => {
 
   Product.findById(productId)
     .then(product => {
+      if (product.userId.toString() !== req.user._id.toString())
+        return res.redirect("/");
       product.title = title;
       product.price = price;
       product.description = description;
       product.imageUrl = imageUrl;
-      return product.save();
-    })
-    .then(response => {
-      console.log("Product updated");
-      res.redirect("/admin/products");
+      // need to nest this then here because this first if, don't want to continue
+      return product.save().then(response => {
+        console.log("Product updated");
+        res.redirect("/admin/products");
+      });
     })
     .catch(err => console.log(err));
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.find()
+  Product.find({ userId: req.user._id })
     // .select("title price -_id") // !!! query projection
     // .populate("userId", "name") // populate userId but only with name (from the all user object)
     .then(products => {
@@ -83,7 +85,7 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  Product.findByIdAndRemove(prodId)
+  Product.deleteOne({ _id: prodId, userId: req.user._id })
     .then(() => {
       console.log(`Product with id ${prodId} removed`);
       res.redirect("/admin/products");
