@@ -40,6 +40,14 @@ exports.getSignup = (req, res, next) => {
 
 exports.postLogin = (req, res, next) => {
   const { email, password } = req.body;
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty())
+    return res.status(422).render("auth/login", {
+      path: "/login",
+      pageTitle: "login",
+      errorMessage: errors.array()[0].msg
+    });
 
   User.findOne({ email })
     .then(user => {
@@ -73,7 +81,7 @@ exports.postLogin = (req, res, next) => {
 };
 
 exports.postSignup = (req, res, next) => {
-  const { email, password, confirmPassword } = req.body;
+  const { email, password } = req.body;
   const errors = validationResult(req);
 
   if (!errors.isEmpty())
@@ -83,32 +91,24 @@ exports.postSignup = (req, res, next) => {
       errorMessage: errors.array()[0].msg
     });
 
-  User.findOne({ email })
-    .then(userDoc => {
-      if (userDoc) {
-        req.flash("error", "Email exist already.");
-        return res.redirect("/signup");
-      }
-      return bcrypt
-        .hash(password, 12)
-        .then(hashedPassword => {
-          const newUser = new User({
-            email,
-            password: hashedPassword,
-            cart: { items: [] }
-          });
-          return newUser.save();
-        })
-        .then(result => {
-          res.redirect("/login");
-          return transporter.sendMail({
-            to: email,
-            from: "shop@node-complete.com",
-            subject: "Signup succeded!",
-            html: "<h1>You successfully signed up!</h1>"
-          });
-        })
-        .catch(err => console.log(err));
+  bcrypt
+    .hash(password, 12)
+    .then(hashedPassword => {
+      const newUser = new User({
+        email,
+        password: hashedPassword,
+        cart: { items: [] }
+      });
+      return newUser.save();
+    })
+    .then(result => {
+      res.redirect("/login");
+      return transporter.sendMail({
+        to: email,
+        from: "shop@node-complete.com",
+        subject: "Signup succeded!",
+        html: "<h1>You successfully signed up!</h1>"
+      });
     })
     .catch(err => console.log(err));
 };
