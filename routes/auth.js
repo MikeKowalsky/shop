@@ -15,13 +15,15 @@ router.post(
   [
     body("email")
       .isEmail()
-      .withMessage("Please enter a valid email."),
+      .withMessage("Please enter a valid email.")
+      .normalizeEmail(),
     body(
       "password",
       "Remember a password needs minimum 5 alphanumeric characters!"
     )
       .isLength({ min: 5 })
       .isAlphanumeric()
+      .trim()
   ],
   authController.postLogin
 );
@@ -43,7 +45,8 @@ router.post(
         return User.findOne({ email: value }).then(userDoc => {
           if (userDoc) return Promise.reject("Email exist already.");
         });
-      }),
+      })
+      .normalizeEmail(),
     // another approach - should be the same, but to remeber
     // check is checking everything - req.body, cookies, header ...
     body(
@@ -52,12 +55,15 @@ router.post(
     )
       // second parameter in body, check is a default msg which will be send to the frontend
       .isLength({ min: 5 })
-      .isAlphanumeric(),
-    body("confirmPassword").custom((value, { req }) => {
-      if (value !== req.body.password)
-        throw new Error("Passwords need to match!");
-      return true;
-    })
+      .isAlphanumeric()
+      .trim(),
+    body("confirmPassword")
+      .trim()
+      .custom((value, { req }) => {
+        if (value !== req.body.password)
+          throw new Error("Passwords need to match!");
+        return true;
+      })
   ],
   //just an exapmle, how we can add the custom validation pattern
   authController.postSignup
