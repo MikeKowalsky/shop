@@ -49,15 +49,17 @@ app.use(csrfProtection);
 app.use(flash());
 
 app.use((req, res, next) => {
-  if (!req.session.user) {
-    return next();
-  }
+  if (!req.session.user) return next();
+
   User.findById(req.session.user._id)
     .then(user => {
+      if (!user) return next();
       req.user = user;
       next();
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      throw new Error(err);
+    });
 });
 
 app.use((req, res, next) => {
@@ -70,7 +72,13 @@ app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
 
+app.get("/500", errorController.get500);
+
 app.use(errorController.get404);
+
+// express will handle this special middleware with 4 args before the others
+// so the error will be handled before app.use(get404)
+app.use((error, req, res, next) => res.redirect("/500"));
 
 mongoose
   .connect(MONGODB_URI, { useNewUrlParser: true })
