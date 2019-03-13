@@ -49,6 +49,12 @@ app.use(csrfProtection);
 app.use(flash());
 
 app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
+
+app.use((req, res, next) => {
   if (!req.session.user) return next();
 
   User.findById(req.session.user._id)
@@ -58,14 +64,9 @@ app.use((req, res, next) => {
       next();
     })
     .catch(err => {
-      throw new Error(err);
+      // inside async operations you need to use next with an error
+      next(new Error(err));
     });
-});
-
-app.use((req, res, next) => {
-  res.locals.isAuthenticated = req.session.isLoggedIn;
-  res.locals.csrfToken = req.csrfToken();
-  next();
 });
 
 app.use("/admin", adminRoutes);
@@ -78,7 +79,14 @@ app.use(errorController.get404);
 
 // express will handle this special middleware with 4 args before the others
 // so the error will be handled before app.use(get404)
-app.use((error, req, res, next) => res.redirect("/500"));
+app.use((error, req, res, next) => {
+  // res.redirect("/500")
+  res.render("500", {
+    pageTitle: "Error",
+    path: "500",
+    isAuthenticated: req.session.isLoggedIn
+  });
+});
 
 mongoose
   .connect(MONGODB_URI, { useNewUrlParser: true })
