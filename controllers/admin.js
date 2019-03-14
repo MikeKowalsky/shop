@@ -14,17 +14,34 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.postAddProduct = (req, res, next) => {
   const { title, price, description } = req.body;
-  const errors = validationResult(req);
+  const image = req.file;
 
-  if (!errors.isEmpty()) {
-    return res.status(422).render("admin/add-product", {
+  if (!image) {
+    return res.status(422).render("admin/edit-product", {
       pageTitle: "Add product",
       path: "/admin/add-product",
       editing: false,
       hasError: true,
       product: {
         title,
-        imageUrl: req.file,
+        price,
+        description
+      },
+      errorMessage: "Attached file is not an image.",
+      validationErrors: []
+    });
+  }
+
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).render("admin/edit-product", {
+      pageTitle: "Add product",
+      path: "/admin/add-product",
+      editing: false,
+      hasError: true,
+      product: {
+        title,
         price,
         description
       },
@@ -32,6 +49,8 @@ exports.postAddProduct = (req, res, next) => {
       validationErrors: errors.array()
     });
   }
+
+  const imageUrl = image.path;
 
   const product = new Product({
     title,
@@ -106,7 +125,8 @@ exports.getEditProduct = (req, res, next) => {
 };
 
 exports.postEditProduct = (req, res, next) => {
-  const { productId, title, price, imageUrl, description } = req.body;
+  const { productId, title, price, description } = req.body;
+  const image = req.file;
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
@@ -117,7 +137,6 @@ exports.postEditProduct = (req, res, next) => {
       hasError: true,
       product: {
         title,
-        imageUrl,
         price,
         description,
         _id: productId
@@ -134,7 +153,8 @@ exports.postEditProduct = (req, res, next) => {
       product.title = title;
       product.price = price;
       product.description = description;
-      product.imageUrl = imageUrl;
+      if (image) product.imageUrl = image.path;
+
       // need to nest this then here because this first if, don't want to continue
       return product.save().then(response => {
         console.log("Product updated");

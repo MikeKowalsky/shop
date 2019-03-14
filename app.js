@@ -55,10 +55,11 @@ app.set("view engine", "ejs");
 app.set("views", "views");
 
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(
-  multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
-);
+app.use(multer({ storage: fileStorage, fileFilter }).single("image"));
+
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/images", express.static(path.join(__dirname, "images")));
+
 app.use(
   session({
     secret: config.keys.SECRET,
@@ -85,10 +86,8 @@ app.use((req, res, next) => {
       req.user = user;
       next();
     })
-    .catch(err => {
-      // inside async operations you need to use next with an error
-      next(new Error(err));
-    });
+    // inside async operations you need to use next with an error
+    .catch(err => next(new Error(err)));
 });
 
 app.use("/admin", adminRoutes);
@@ -103,7 +102,7 @@ app.use(errorController.get404);
 // so the error will be handled before app.use(get404)
 app.use((error, req, res, next) => {
   // res.redirect("/500")
-  res.render("500", {
+  res.status(500).render("500", {
     pageTitle: "Error",
     path: "500",
     isAuthenticated: req.session.isLoggedIn
