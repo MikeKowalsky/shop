@@ -1,6 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 
+const PDFDocument = require("pdfkit");
+
 const Product = require("../models/product");
 const Order = require("../models/order");
 // const User = require("../models/user");
@@ -159,6 +161,41 @@ exports.getInvoice = (req, res, next) => {
       const invoiceName = `invoice-${orderId}.pdf`;
       const invoicePath = path.join("data", "invoices", invoiceName);
 
+      const pdfDoc = new PDFDocument();
+
+      //need to set up headers first
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", `inline; filename=${invoiceName}`);
+
+      // want to save it on the server
+      pdfDoc.pipe(fs.createWriteStream(invoicePath));
+      // and send it to the user
+      pdfDoc.pipe(res);
+
+      // now whatever I will put into the Doc will be streamed
+      pdfDoc.fontSize(26).text("Invoice", {
+        underline: true
+      });
+      pdfDoc.text(" ");
+      pdfDoc.fontSize(16).text(`Order id: #${orderId}`);
+      pdfDoc.text("-----------------------------");
+      pdfDoc.text(" ");
+
+      let totalPrice = 0;
+
+      order.products.forEach((prod, i) => {
+        totalPrice += prod.quantity * prod.product.price;
+        pdfDoc.text(
+          `${i} - ${prod.product.title} - ${prod.quantity} x $${
+            prod.product.price
+          }`
+        );
+      });
+
+      pdfDoc.text(" ");
+      pdfDoc.text(`Total price: $${totalPrice}`);
+      pdfDoc.end();
+
       // read the whole file into memory and than send
       // with bigger file and traffic this will kill the server
       //
@@ -170,10 +207,10 @@ exports.getInvoice = (req, res, next) => {
       // });
 
       // so recomended way is to use chunks and buffers
-      const file = fs.createReadStream(invoicePath);
-      res.setHeader("Content-Type", "application/pdf");
-      res.setHeader("Content-Disposition", `inline; filename=${invoiceName}`);
-      file.pipe(res);
+      // const file = fs.createReadStream(invoicePath);
+      // res.setHeader("Content-Type", "application/pdf");
+      // res.setHeader("Content-Disposition", `inline; filename=${invoiceName}`);
+      // file.pipe(res);
     })
     .catch(err => next(err));
 };
