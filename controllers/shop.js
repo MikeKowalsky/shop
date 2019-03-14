@@ -157,14 +157,23 @@ exports.getInvoice = (req, res, next) => {
         return next(new Error("Unauthorized"));
 
       const invoiceName = `invoice-${orderId}.pdf`;
-      console.log(orderId, invoiceName);
       const invoicePath = path.join("data", "invoices", invoiceName);
-      fs.readFile(invoicePath, (err, data) => {
-        if (err) return next(err);
-        res.setHeader("Content-Type", "application/pdf");
-        res.setHeader("Content-Disposition", `inline; filename=${invoiceName}`);
-        res.send(data);
-      });
+
+      // read the whole file into memory and than send
+      // with bigger file and traffic this will kill the server
+      //
+      // fs.readFile(invoicePath, (err, data) => {
+      //   if (err) return next(err);
+      //   res.setHeader("Content-Type", "application/pdf");
+      //   res.setHeader("Content-Disposition", `inline; filename=${invoiceName}`);
+      //   res.send(data);
+      // });
+
+      // so recomended way is to use chunks and buffers
+      const file = fs.createReadStream(invoicePath);
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", `inline; filename=${invoiceName}`);
+      file.pipe(res);
     })
     .catch(err => next(err));
 };

@@ -16,7 +16,7 @@
             <!-- thanks to this EAGER loading there is products field in every order -->
             <% order.products.forEach(p => { %>
               <li class="orders__products-item">
-                <%= p.product.title %> (<%= p.quantity %>) - <a href="/orders/<%= order._id %>">Invoice</a>
+                <%= p.product.title %> (<%= p.quantity %>) - <a href="/orders/<%= order._id %>" target="_blank">Invoice</a>
               </li>
             <% }); %>
           </ul>
