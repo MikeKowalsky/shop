@@ -18,6 +18,8 @@ const authRoutes = require("./routes/auth");
 const User = require("./models/user");
 
 const errorController = require("./controllers/error");
+const shopController = require("./controllers/shop");
+const isAuth = require("./middleware/is-auth");
 
 const MONGODB_URI = `mongodb+srv://${config.keys.MONGO_USER}:${
   config.keys.MONGO_PASSWORD
@@ -68,12 +70,10 @@ app.use(
     store: store
   })
 );
-app.use(csrfProtection);
 app.use(flash());
 
 app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session.isLoggedIn;
-  res.locals.csrfToken = req.csrfToken();
   next();
 });
 
@@ -90,6 +90,16 @@ app.use((req, res, next) => {
     .catch(err => next(new Error(err)));
 });
 
+// we need to have this route here to avoid checking crsf protection
+// stripe form, which is sent here is protected by them
+app.post("/create-order", isAuth, shopController.postOrder);
+
+app.use(csrfProtection);
+app.use((req, res, next) => {
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
+
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
@@ -102,6 +112,7 @@ app.use(errorController.get404);
 // so the error will be handled before app.use(get404)
 app.use((error, req, res, next) => {
   // res.redirect("/500")
+  console.log(error);
   res.status(500).render("500", {
     pageTitle: "Error",
     path: "500",

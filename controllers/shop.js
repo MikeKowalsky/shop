@@ -7,6 +7,12 @@ const Product = require("../models/product");
 const Order = require("../models/order");
 // const User = require("../models/user");
 
+const keys = require("../util/keys");
+
+// Set your secret key: remember to change this to your live secret key in production
+// See your keys here: https://dashboard.stripe.com/account/apikeys
+var stripe = require("stripe")(keys.keys.STRIPE_KEY);
+
 const ITEMS_PER_PAGE = 2;
 
 exports.getProducts = (req, res, next) => {
@@ -138,11 +144,54 @@ exports.postCartDeleteProduct = (req, res, next) => {
     });
 };
 
-exports.postOrder = (req, res, next) => {
+exports.getCheckout = (req, res, next) => {
   req.user
     .populate("cart.items.productId")
     .execPopulate()
     .then(user => {
+      const products = user.cart.items;
+      let totalSum = 0;
+      products.forEach(p => (totalSum += p.quantity * p.productId.price));
+
+      res.render("shop/checkout", {
+        path: "/checkout",
+        pageTitle: "Checkout",
+        products,
+        totalSum
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
+};
+
+exports.postOrder = (req, res, next) => {
+  // Token is created using Checkout or Elements!
+  // Get the payment token ID submitted by the form:
+  const token = req.body.stripeToken; // Using Express
+
+  // (async () => {
+  //   const charge = await stripe.charges.create({
+  //     amount: 999,
+  //     currency: "usd",
+  //     description: "Example charge",
+  //     source: token
+  //   });
+  // })();
+
+  let totalSum = 0;
+
+  req.user
+    .populate("cart.items.productId")
+    .execPopulate()
+    .then(user => {
+      user.cart.items.forEach(
+        p => (totalSum += p.quantity * p.productId.price)
+      );
+
       const products = user.cart.items.map(i => ({
         quantity: i.quantity,
         product: { ...i.productId._doc } //to retrieve whole data not only id, which will be default behavior
@@ -154,9 +203,19 @@ exports.postOrder = (req, res, next) => {
         },
         products
       });
-      order.save();
+      return order.save();
     })
-    .then(result => req.user.clearCart())
+    .then(result => {
+      const charge = stripe.charges.create({
+        amount: totalSum * 100,
+        currency: "usd",
+        description: "Demo order",
+        source: token,
+        metadata: { order_id: result._id.toString() }
+      });
+
+      return req.user.clearCart();
+    })
     .then(() => res.redirect("/orders"))
     .catch(err => {
       console.log(err);
