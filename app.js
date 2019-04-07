@@ -14,7 +14,7 @@ const helmet = require("helmet");
 const compression = require("compression");
 const morgan = require("morgan");
 
-const config = require("./util/keys");
+// const config = require("./util/keys");
 
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
