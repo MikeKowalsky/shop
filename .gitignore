@@ -1,2 +1,4 @@
 /node_modules
 /util/keys.js
+
+nodemon.json

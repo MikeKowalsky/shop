@@ -8,6 +8,7 @@ const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
 const flash = require("connect-flash");
+const helmet = require("helmet");
 
 const config = require("./util/keys");
 
@@ -21,9 +22,9 @@ const errorController = require("./controllers/error");
 const shopController = require("./controllers/shop");
 const isAuth = require("./middleware/is-auth");
 
-const MONGODB_URI = `mongodb+srv://${config.keys.MONGO_USER}:${
-  config.keys.MONGO_PASSWORD
-}@cluster0-idsge.mongodb.net/shop?retryWrites=true`;
+const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${
+  process.env.MONGO_PASSWORD
+}@cluster0-idsge.mongodb.net/${process.env.MONGO_DB}shop?retryWrites=true`;
 
 const app = express();
 
@@ -55,6 +56,8 @@ const fileFilter = (req, file, cb) => {
 
 app.set("view engine", "ejs");
 app.set("views", "views");
+
+app.set(helmet());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(multer({ storage: fileStorage, fileFilter }).single("image"));
@@ -124,7 +127,7 @@ mongoose
   .connect(MONGODB_URI, { useNewUrlParser: true })
   .then(client => {
     console.log("**** MongoDB connected");
-    app.listen(3000, () => {
+    app.listen(process.env.PORT || 3000, () => {
       console.log("**** Server runs on port 3000");
     });
   })
