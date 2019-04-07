@@ -1,15 +1,15 @@
 const mongodb = require("mongodb");
 const MongoClient = mongodb.MongoClient;
 
-const keys = require("./keys");
+// const keys = require("./keys");
 
 let _db;
 
 const mongoConnect = callback => {
   MongoClient.connect(
-    `mongodb+srv://${keys.keys.MONGO_USER}:${
-      keys.keys.MONGO_PASSWORD
-    }@cluster0-idsge.mongodb.net/shop?retryWrites=true`,
+    `mongodb+srv://${process.env.MONGO_USER}:${
+      process.env.MONGO_PASSWORD
+    }@cluster0-idsge.mongodb.net/${process.env.MONGO_DB}?retryWrites=true`,
     { useNewUrlParser: true }
   )
     .then(client => {

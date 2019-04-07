@@ -7,11 +7,11 @@ const Product = require("../models/product");
 const Order = require("../models/order");
 // const User = require("../models/user");
 
-const keys = require("../util/keys");
+// const keys = require("../util/keys");
 
 // Set your secret key: remember to change this to your live secret key in production
 // See your keys here: https://dashboard.stripe.com/account/apikeys
-var stripe = require("stripe")(keys.keys.STRIPE_KEY);
+var stripe = require("stripe")(process.env.STRIPE_KEY);
 
 const ITEMS_PER_PAGE = 2;
 
