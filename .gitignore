@@ -2,3 +2,5 @@
 /util/keys.js
 
 nodemon.json
+server.cert
+server.key
